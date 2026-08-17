@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REPAIRTECH | Professional Electronic Repair & Management Platform</title>
+    <meta name="description" content="Fast, reliable electronic repair with transparent pricing, instant booking, and real-time repair tracking.">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #F7F6F2; color: #17212B; }
+        .transition-all { transition: all 0.2s ease-in-out; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-[#2563A6] selection:text-white">
+
+    <!-- TOP NOTIFICATION BANNER (Demo Mode Notice) -->
+    <div id="demo-banner" class="bg-[#17212B] text-[#DCEAF5] text-xs py-2 px-4 text-center font-medium flex justify-between items-center z-50">
+        <div class="flex-1 text-center">
+            <span class="inline-block w-2 h-2 rounded-full bg-[#3F7D5A] mr-1 animate-pulse"></span>
+            <span id="banner-text">PROTOTYPE MODE: Fully interactive client portal and technician repair management dashboard active.</span>
+        </div>
+        <button onclick="document.getElementById('demo-banner').style.display='none'" class="text-gray-400 hover:text-white px-2">✕</button>
+    </div>
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="sticky top-0 z-40 bg-[#F7F6F2]/95 backdrop-blur-md border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" onclick="switchView('home')" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-lg bg-[#17212B] text-[#DCEAF5] flex items-center justify-center font-bold text-xl group-hover:bg-[#2563A6] transition-all">
+                    RT
+                </div>
+                <div>
+                    <span class="font-bold text-lg tracking-tight text-[#17212B]">REPAIR<span class="text-[#2563A6]">TECH</span></span>
+                    <span class="block text-[10px] text-gray-500 uppercase tracking-widest font-semibold">Electronics Service</span>
+                </div>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex items-center gap-8 font-medium text-sm text-gray-700">
+                <a href="#" onclick="switchView('home')" class="hover:text-[#2563A6] transition-all" data-i18n="nav_services">Services</a>
+                <a href="#" onclick="switchView('how-it-works')" class="hover:text-[#2563A6] transition-all" data-i18n="nav_how">How It Works</a>
+                <a href="#" onclick="switchView('track')" class="hover:text-[#2563A6] transition-all" data-i18n="nav_track">Track Repair</a>
+                <a href="#" onclick="switchView('customer-dashboard')" class="hover:text-[#2563A6] transition-all" data-i18n="nav_dashboard">My Dashboard</a>
+                <a href="#" onclick="switchView('admin')" class="text-xs px-2.5 py-1 bg-[#17212B] text-[#DCEAF5] rounded hover:bg-[#2563A6] transition-all font-semibold" data-i18n="nav_admin">Admin Portal</a>
+            </nav>
+
+            <!-- Actions & Language Selector -->
+            <div class="hidden md:flex items-center gap-4">
+                <select id="lang-switcher" onchange="changeLanguage(this.value)" class="bg-white border border-gray-300 text-gray-700 text-xs rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                    <option value="en">EN</option>
+                    <option value="fr">FR</option>
+                    <option value="es">ES</option>
+                </select>
+                <button onclick="switchView('book')" class="bg-[#2563A6] hover:bg-[#1d4e8a] text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm transition-all flex items-center gap-2">
+                    <i data-lucide="wrench" class="w-4 h-4"></i>
+                    <span data-i18n="cta_book">Book a Repair</span>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="flex md:hidden items-center gap-3">
+                <select onchange="changeLanguage(this.value)" class="bg-white border border-gray-300 text-gray-700 text-xs rounded-md px-1 py-1">
+                    <option value="en">EN</option>
+                    <option value="fr">FR</option>
+                    <option value="es">ES</option>
+                </select>
+                <button onclick="toggleMobileMenu()" class="p-2 text-gray-700 hover:text-black">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu Dropdown -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-200 px-4 pt-2 pb-6 space-y-3">
+            <a href="#" onclick="switchView('home'); toggleMobileMenu();" class="block py-2 text-gray-700 font-medium" data-i18n="nav_services">Services</a>
+            <a href="#" onclick="switchView('how-it-works'); toggleMobileMenu();" class="block py-2 text-gray-700 font-medium" data-i18n="nav_how">How It Works</a>
+            <a href="#" onclick="switchView('track'); toggleMobileMenu();" class="block py-2 text-gray-700 font-medium" data-i18n="nav_track">Track Repair</a>
+            <a href="#" onclick="switchView('customer-dashboard'); toggleMobileMenu();" class="block py-2 text-gray-700 font-medium" data-i18n="nav_dashboard">My Dashboard</a>
+            <a href="#" onclick="switchView('admin'); toggleMobileMenu();" class="block py-2 text-[#2563A6] font-semibold" data-i18n="nav_admin">Admin Portal</a>
+            <div class="pt-2">
+                <button onclick="switchView('book'); toggleMobileMenu();" class="w-full bg-[#2563A6] text-white py-2.5 rounded-lg text-sm font-medium text-center shadow-sm" data-i18n="cta_book">Book a Repair</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN VIEW CONTAINER -->
+    <main id="main-content" class="flex-1">
+        <!-- Views will be dynamically injected here via JavaScript -->
+    </main>
+
+    <!-- FLOATING AI ASSISTANT WIDGET -->
+    <div id="ai-chat-widget" class="fixed bottom-6 right-6 z-50">
+        <!-- Chat Toggle Button -->
+        <button id="ai-toggle-btn" onclick="toggleAIChat()" class="w-14 h-14 rounded-full bg-[#17212B] text-white flex items-center justify-center shadow-lg hover:bg-[#2563A6] transition-all relative group">
+            <i data-lucide="bot" class="w-6 h-6"></i>
+            <span class="absolute -top-1 -right-1 w-4 h-4 bg-[#3F7D5A] rounded-full border-2 border-white"></span>
+        </button>
+
+        <!-- Chat Window -->
+        <div id="ai-chat-window" class="hidden absolute bottom-18 right-0 w-[90vw] sm:w-[380px] bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col h-[500px] overflow-hidden">
+            <!-- Chat Header -->
+            <div class="bg-[#17212B] text-white p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-[#2563A6] flex items-center justify-center text-white">
+                        <i data-lucide="bot" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-sm" data-i18n="ai_title">Repair Assistant</h3>
+                        <p class="text-xs text-gray-300 flex items-center gap-1">
+                            <span class="w-2 h-2 rounded-full bg-green-400"></span> <span data-i18n="ai_status">Online & Ready</span>
+                        </p>
+                    </div>
+                </div>
+                <button onclick="toggleAIChat()" class="text-gray-300 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="ai-messages" class="flex-1 p-4 overflow-y-auto space-y-3 bg-[#F7F6F2] text-sm">
+                <!-- Initial Bot Message -->
+                <div class="flex gap-2 max-w-[85%]">
+                    <div class="w-7 h-7 rounded-full bg-[#17212B] text-white flex-shrink-0 flex items-center justify-center text-xs">AI</div>
+                    <div class="bg-white p-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-200 text-gray-800">
+                        <p data-i18n="ai_welcome">Hello! I am your RepairTech assistant. How can I help you with your electronic device today?</p>
+                        <div class="mt-2 flex flex-wrap gap-1.5">
+                            <button onclick="sendQuickPrompt('Where is my repair?')" class="text-xs bg-[#DCEAF5] text-[#17212B] px-2.5 py-1 rounded-full hover:bg-[#2563A6] hover:text-white transition-all">Where is my repair?</button>
+                            <button onclick="sendQuickPrompt('What services do you offer?')" class="text-xs bg-[#DCEAF5] text-[#17212B] px-2.5 py-1 rounded-full hover:bg-[#2563A6] hover:text-white transition-all">Services & Pricing</button>
+                            <button onclick="sendQuickPrompt('How do I book a repair?')" class="text-xs bg-[#DCEAF5] text-[#17212B] px-2.5 py-1 rounded-full hover:bg-[#2563A6] hover:text-white transition-all">Book a repair</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="p-3 bg-white border-t border-gray-200 flex items-center gap-2">
+                <input type="text" id="ai-input" onkeypress="handleAIPress(event)" placeholder="Type your message..." class="flex-1 bg-gray-100 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]" data-i18n-placeholder="ai_placeholder">
+                <button onclick="sendAIMessage()" class="bg-[#2563A6] hover:bg-[#1d4e8a] text-white p-2 rounded-lg transition-all flex items-center justify-center">
+                    <i data-lucide="send" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-[#17212B] text-gray-300 pt-12 pb-8 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <div class="flex items-center gap-2 mb-4">
+                    <div class="w-8 h-8 rounded-lg bg-[#2563A6] text-white flex items-center justify-center font-bold text-lg">RT</div>
+                    <span class="font-bold text-lg text-white tracking-tight">REPAIR<span class="text-[#2563A6]">TECH</span></span>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed" data-i18n="footer_desc">Professional diagnostic and component-level repair for smartphones, laptops, consoles, and complex electronic systems.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white text-sm mb-3" data-i18n="footer_links">Quick Links</h4>
+                <ul class="space-y-2 text-xs text-gray-400">
+                    <li><a href="#" onclick="switchView('home')" class="hover:text-white" data-i18n="nav_services">Services</a></li>
+                    <li><a href="#" onclick="switchView('how-it-works')" class="hover:text-white" data-i18n="nav_how">How It Works</a></li>
+                    <li><a href="#" onclick="switchView('track')" class="hover:text-white" data-i18n="nav_track">Track Repair</a></li>
+                    <li><a href="#" onclick="switchView('book')" class="hover:text-white" data-i18n="cta_book">Book Repair</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white text-sm mb-3" data-i18n="footer_contact">Contact & Hours</h4>
+                <p class="text-xs text-gray-400 mb-1">support@repairtech.io</p>
+                <p class="text-xs text-gray-400 mb-1">+1 (800) 555-TECH</p>
+                <p class="text-xs text-gray-400">Mon-Sat: 9:00 AM - 7:00 PM</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white text-sm mb-3" data-i18n="footer_secure">Secure Platform</h4>
+                <p class="text-xs text-gray-400 mb-3" data-i18n="footer_secure_desc">Enterprise-grade device tracking and encrypted client record management.</p>
+                <div class="flex items-center gap-2 text-xs text-gray-400">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-[#3F7D5A]"></i>
+                    <span data-i18n="footer_warranty">90-Day Repair Warranty</span>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-800 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500">
+            <p>&copy; 2026 REPAIRTECH Inc. All rights reserved.</p>
+            <div class="flex gap-4 mt-2 sm:mt-0">
+                <a href="#" class="hover:text-gray-400">Privacy Policy</a>
+                <a href="#" class="hover:text-gray-400">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // --- CENTRALIZED STATE & MOCK DATABASE ---
+        let currentLang = 'en';
+        let currentView = 'home';
+        
+        // Mock Repair Database
+        let repairDatabase = [
+            {
+                id: "ER-20481",
+                customerName: "John Doe",
+                email: "john.doe@example.com",
+                phone: "+1 555-0192",
+                deviceCategory: "Laptops",
+                brandModel: "MacBook Pro 14' M2",
+                serialNumber: "C02G90XYZ3H",
+                problemCategory: "Display / Screen",
+                problemDescription: "Screen flickers and goes completely black after 10 minutes of use.",
+                status: "Repairing",
+                statusKey: "repairing",
+                technician: "Alex Rivera",
+                estimatedCompletion: "August 20, 2026",
+                createdAt: "August 14, 2026 — 09:15 AM",
+                estimate: {
+                    parts: 120,
+                    labor: 45,
+                    total: 165,
+                    approved: true
+                },
+                history: [
+                    { status: "Request Received", time: "Aug 14, 2026 — 09:15 AM", note: "Customer submitted online repair request." },
+                    { status: "Device Received", time: "Aug 15, 2026 — 11:30 AM", note: "Logged in intake department and assigned to technician." },
+                    { status: "Diagnosing", time: "Aug 15, 2026 — 02:00 PM", note: "Display cable loose and backlight driver fried." },
+                    { status: "Awaiting Customer Approval", time: "Aug 15, 2026 — 02:45 PM", note: "Estimate sent ($165.00). Approved by client." },
+                    { status: "Repairing", time: "Aug 16, 2026 — 10:35 AM", note: "Replacing damaged display controller module." }
+                ]
+            },
+            {
+                id: "ER-20492",
+                customerName: "Sarah Jenkins",
+                email: "sarah.j@example.com",
+                phone: "+1 555-8832",
+                deviceCategory: "Smartphones",
+                brandModel: "iPhone 15 Pro",
+                serialNumber: "DNQX991VF",
+                problemCategory: "Battery",
+                problemDescription: "Battery drains extremely fast and device shuts down at 30%.",
+                status: "Ready for Collection",
+                statusKey: "ready",
+                technician: "Marcus Vance",
+                estimatedCompletion: "August 17, 2026",
+                createdAt: "August 15, 2026 — 10:00 AM",
+                estimate: {
+                    parts: 85,
+                    labor: 30,
+                    total: 115,
+                        approved: true
+                },
+                history: [
+                    { status: "Request Received", time: "Aug 15, 2026 — 10:00 AM", note: "Walk-in drop-off scheduled online." },
+                    { status: "Device Received", time: "Aug 15, 2026 — 12:00 PM", note: "Device booked into system." },
+                    { status: "Diagnosing", time: "Aug 15, 2026 — 01:30 PM", note: "Battery health at 71% capacity." },
+                    { status: "Repairing", time: "Aug 16, 2026 — 09:00 AM", note: "New OEM lithium-ion battery installed and calibrated." },
+                    { status: "Testing", time: "Aug 16, 2026 — 11:00 AM", note: "Passed 10-point power stress test." },
+                    { status: "Ready for Collection", time: "Aug 17, 2026 — 08:30 AM", note: "SMS notification sent to customer." }
+                ]
+            }
+        ];
+
+        // --- TRANSLATION DICTIONARY ---
+        const translations = {
+            en: {
+                nav_services: "Services",
+                nav_how: "How It Works",
+                nav_track: "Track Repair",
+                nav_dashboard: "My Dashboard",
+                nav_admin: "Admin Portal",
+                cta_book: "Book a Repair",
+                hero_title: "Your Device. Professionally Repaired.",
+                hero_sub: "Fast, reliable electronic repair with transparent pricing and real-time repair tracking.",
+                hero_btn_book: "Book a Repair Now",
+                hero_btn_track: "Track My Repair",
+                track_box_title: "Quick Repair Lookup",
+                track_box_placeholder: "Enter repair number (e.g., ER-20481)",
+                track_box_btn: "Track Repair",
+                services_heading: "Expert Electronic Repairs",
+                services_sub: "Professional component-level diagnostics and repair with a 90-day warranty.",
+                view_service: "View Service",
+                how_heading: "Our 6-Step Repair Journey",
+                how_sub: "Total transparency at every single stage of your device's repair process.",
+                step1_title: "1. Book", step1_desc: "Submit your device details online in under 2 minutes.",
+                step2_title: "2. Received", step2_desc: "Device logged securely into our regional facility.",
+                step3_title: "3. Diagnosis", step3_desc: "Comprehensive testing by certified technicians.",
+                step4_title: "4. Approval", step4_desc: "Transparent estimate sent for your quick approval.",
+                step5_title: "5. Repair & Test", step5_desc: "Precision repair followed by rigorous quality tests.",
+                step6_title: "6. Ready", step6_desc: "Ready for pickup or express insured return shipping.",
+                footer_desc: "Professional diagnostic and component-level repair for smartphones, laptops, consoles, and complex electronic systems.",
+                footer_links: "Quick Links",
+                footer_contact: "Contact & Hours",
+                footer_secure: "Secure Platform",
+                footer_secure_desc: "Enterprise-grade device tracking and encrypted client record management.",
+                footer_warranty: "90-Day Repair Warranty",
+                ai_title: "Repair Assistant",
+                ai_status: "Online & Ready",
+                ai_welcome: "Hello! I am your RepairTech assistant. How can I help you with your electronic device today?",
+                ai_placeholder: "Type your message..."
+            },
+            fr: {
+                nav_services: "Services",
+                nav_how: "Comment ça marche",
+                nav_track: "Suivre une réparation",
+                nav_dashboard: "Mon Tableau de bord",
+                nav_admin: "Portail Admin",
+                cta_book: "Réserver une réparation",
+                hero_title: "Votre appareil. Réparé par des professionnels.",
+                hero_sub: "Réparation électronique rapide et fiable avec tarification transparente et suivi en temps réel.",
+                hero_btn_book: "Réserver maintenant",
+                hero_btn_track: "Suivre ma réparation",
+                track_box_title: "Recherche rapide",
+                track_box_placeholder: "Entrez le n° (ex: ER-20481)",
+                track_box_btn: "Suivre",
+                services_heading: "Réparations Électroniques Expertes",
+                services_sub: "Diagnostics professionnels et réparation avec garantie de 90 jours.",
+                view_service: "Voir le service",
+                how_heading: "Notre processus en 6 étapes",
+                how_sub: "Transparence totale à chaque étape de la réparation de votre appareil.",
+                step1_title: "1. Réservation", step1_desc: "Soumettez les détails en moins de 2 minutes.",
+                step2_title: "2. Réception", step2_desc: "Appareil enregistré dans notre centre agréé.",
+                step3_title: "3. Diagnostic", step3_desc: "Tests complets par des techniciens certifiés.",
+                step4_title: "4. Approbation", step4_desc: "Devis transparent envoyé pour validation.",
+                step5_title: "5. Réparation & Test", step5_desc: "Réparation de précision et tests rigoureux.",
+                step6_title: "6. Prêt", step6_desc: "Prêt pour retrait ou réexpédition sécurisée.",
+                footer_desc: "Réparation professionnelle de smartphones, ordinateurs portables, consoles et systèmes électroniques.",
+                footer_links: "Liens Rapides",
+                footer_contact: "Contact & Horaires",
+                footer_secure: "Plateforme Sécurisée",
+                footer_secure_desc: "Suivi d'appareils de niveau entreprise et gestion sécurisée.",
+                footer_warranty: "Garantie de réparation de 90 jours",
+                ai_title: "Assistant Réparation",
+                ai_status: "En ligne",
+                ai_welcome: "Bonjour ! Je suis votre assistant RepairTech. Comment puis-je vous aider aujourd'hui ?",
+                ai_placeholder: "Tapez votre message..."
+            },
+            es: {
+                nav_services: "Servicios",
+                nav_how: "Cómo Funciona",
+                nav_track: "Rastrear Reparación",
+                nav_dashboard: "Mi Panel",
+                nav_admin: "Portal Admin",
+                cta_book: "Reservar Reparación",
+                hero_title: "Tu dispositivo. Reparado profesionalmente.",
+                hero_sub: "Reparación electrónica rápida y confiable con precios transparentes y seguimiento en tiempo real.",
+                hero_btn_book: "Reservar Ahora",
+                hero_btn_track: "Rastrear Mi Reparación",
+                track_box_title: "Búsqueda Rápida",
+                track_box_placeholder: "Ingresa número (ej: ER-20481)",
+                track_box_btn: "Rastrear",
+                services_heading: "Reparaciones Electrónicas Expertas",
+                services_sub: "Diagnósticos profesionales y reparación a nivel de componentes con garantía de 90 días.",
+                view_service: "Ver Servicio",
+                how_heading: "Nuestro Proceso de 6 Pasos",
+                how_sub: "Transparencia total en cada etapa del proceso de reparación de su dispositivo.",
+                step1_title: "1. Reserva", step1_desc: "Envía los detalles de tu equipo en menos de 2 minutos.",
+                step2_title: "2. Recibido", step2_desc: "Dispositivo registrado de forma segura en nuestro centro.",
+                step3_title: "3. Diagnóstico", step3_desc: "Pruebas exhaustivas por técnicos certificados.",
+                step4_title: "4. Aprobación", step4_desc: "Presupuesto transparente enviado para su validación.",
+                step5_title: "5. Reparación y Pruebas", step5_desc: "Reparación de precisión y pruebas rigurosas.",
+                step6_title: "6. Listo", step6_desc: "Listo para retiro o envío asegurado de retorno.",
+                footer_desc: "Diagnóstico profesional y reparación de smartphones, laptops, consolas y sistemas electrónicos.",
+                footer_links: "Enlaces Rápidos",
+                footer_contact: "Contacto y Horario",
+                footer_secure: "Plataforma Segura",
+                footer_secure_desc: "Seguimiento de dispositivos y gestión de registros de clientes.",
+                footer_warranty: "Garantía de reparación de 90 días",
+                ai_title: "Asistente de Reparación",
+                ai_status: "En línea",
+                ai_welcome: "¡Hola! Soy tu asistente de RepairTech. ¿Cómo puedo ayudarte hoy con tu dispositivo electrónico?",
+                ai_placeholder: "Escribe tu mensaje..."
+            }
+        };
+
+        // --- CORE INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            switchView('home');
+        });
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            document.getElementById('lang-switcher').value = lang;
+            
+            // Update static elements with data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(translations[lang][key]) {
+                    el.innerText = translations[lang][key];
+                }
+            });
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if(translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // --- VIEW ROUTING ENGINE ---
+        function switchView(viewName, param = null) {
+            currentView = viewName;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const container = document.getElementById('main-content');
+            
+            switch(viewName) {
+                case 'home':
+                    container.innerHTML = renderHomeView();
+                    break;
+                case 'services':
+                    container.innerHTML = renderServicesView();
+                    break;
+                case 'how-it-works':
+                    container.innerHTML = renderHowItWorksView();
+                    break;
+                case 'track':
+                    container.innerHTML = renderTrackView(param);
+                    break;
+                case 'book':
+                    container.innerHTML = renderBookingView();
+                    break;
+                case 'customer-dashboard':
+                    container.innerHTML = renderCustomerDashboardView();
+                    break;
+                case 'admin':
+                    container.innerHTML = renderAdminDashboardView();
+                    break;
+                default:
+                    container.innerHTML = renderHomeView();
+            }
+            lucide.createIcons();
+            changeLanguage(currentLang);
+        }
+
+        // --- 1. HOMEPAGE VIEW ---
+        function renderHomeView() {
+            return `
+                <!-- Hero Section -->
+                <section class="relative bg-[#17212B] text-white py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+                    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div class="space-y-6">
+                            <div class="inline-flex items-center gap-2 bg-[#2563A6]/30 text-[#DCEAF5] px-3 py-1 rounded-full text-xs font-semibold border border-[#2563A6]/50">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5 text-[#3F7D5A]"></i> Professional Component-Level Repair
+                            </div>
+                            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-tight" data-i18n="hero_title">
+                                Your Device. Professionally Repaired.
+                            </h1>
+                            <p class="text-lg text-gray-300 max-w-xl leading-relaxed" data-i18n="hero_sub">
+                                Fast, reliable electronic repair with transparent pricing and real-time repair tracking.
+                            </p>
+                            <div class="flex flex-col sm:flex-row gap-4 pt-2">
+                                <button onclick="switchView('book')" class="bg-[#2563A6] hover:bg-[#1d4e8a] text-white px-6 py-3.5 rounded-xl font-medium shadow-md transition-all flex items-center justify-center gap-2">
+                                    <i data-lucide="wrench" class="w-5 h-5"></i>
+                                    <span data-i18n="hero_btn_book">Book a Repair Now</span>
+                                </button>
+                                <button onclick="switchView('track')" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-6 py-3.5 rounded-xl font-medium transition-all flex items-center justify-center gap-2">
+                                    <i data-lucide="search" class="w-5 h-5"></i>
+                                    <span data-i18n="hero_btn_track">Track My Repair</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Quick Track Box in Hero -->
+                        <div class="bg-white text-[#17212B] p-6 sm:p-8 rounded-2xl shadow-2xl border border-gray-200">
+                            <h3 class="text-lg font-bold mb-2 flex items-center gap-2">
+                                <i data-lucide="map-pin" class="w-5 h-5 text-[#2563A6]"></i> <span data-i18n="track_box_title">Quick Repair Lookup</span>
+                            </h3>
+                            <p class="text-xs text-gray-500 mb-6">Instantly check the status of any active repair ticket.</p>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Repair Number</label>
+                                    <input type="text" id="quick-track-input" placeholder="e.g., ER-20481" value="ER-20481" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                </div>
+                                <button onclick="executeQuickTrack()" class="w-full bg-[#17212B] hover:bg-[#2563A6] text-white py-3 rounded-lg font-medium text-sm transition-all shadow-sm flex items-center justify-center gap-2">
+                                    <span data-i18n="track_box_btn">Track Repair</span>
+                                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div class="mt-6 pt-6 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+                                <span class="flex items-center gap-1"><i data-lucide="check-circle" class="w-4 h-4 text-[#3F7D5A]"></i> 90-Day Warranty</span>
+                                <span class="flex items-center gap-1"><i data-lucide="zap" class="w-4 h-4 text-[#C58A32]"></i> Avg 48h Turnaround</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Services Grid Section -->
+                <section class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                    <div class="text-center max-w-2xl mx-auto mb-16">
+                        <h2 class="text-3xl font-bold tracking-tight mb-4" data-i18n="services_heading">Expert Electronic Repairs</h2>
+                        <p class="text-gray-600 text-sm" data-i18n="services_sub">Professional component-level diagnostics and repair with a 90-day warranty.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${renderServiceCard('smartphone', 'Smartphones', 'Screen replacements, battery swaps, charging port & motherboard micro-soldering.', 'iPhone, Samsung, Google Pixel')}
+                        ${renderServiceCard('laptop', 'Laptops & MacBooks', 'Keyboard repair, liquid damage cleaning, screen & GPU reballing.', 'MacBook, Dell, ThinkPad, HP')}
+                        ${renderServiceCard('tablet', 'Tablets & iPads', 'Digitizer glass replacement, charging issues, and battery upgrades.', 'iPad, Galaxy Tab, Surface')}
+                        ${renderServiceCard('gamepad', 'Game Consoles', 'HDMI port replacement, thermal paste overhaul, stick drift repair.', 'PS5, Xbox Series X, Nintendo Switch')}
+                    </div>
+                </section>
+
+                <!-- How It Works Section -->
+                <section class="bg-white py-20 px-4 sm:px-6 lg:px-8 border-y border-gray-200">
+                    <div class="max-w-7xl mx-auto">
+                        <div class="text-center max-w-2xl mx-auto mb-16">
+                            <h2 class="text-3xl font-bold tracking-tight mb-4" data-i18n="how_heading">Our 6-Step Repair Journey</h2>
+                            <p class="text-gray-600 text-sm" data-i18n="how_sub">Total transparency at every single stage of your device's repair process.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                            ${renderStepCard('1', 'step1_title', 'step1_desc', 'book')}
+                            ${renderStepCard('2', 'step2_title', 'step2_desc', 'package')}
+                            ${renderStepCard('3', 'step3_title', 'step3_desc', 'stethoscope')}
+                            ${renderStepCard('4', 'step4_title', 'step4_desc', 'check-square')}
+                            ${renderStepCard('5', 'step5_title', 'step5_desc', 'cpu')}
+                            ${renderStepCard('6', 'step6_title', 'step6_desc', 'check-circle-2')}
+                        </div>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderServiceCard(icon, title, desc, models) {
+            return `
+                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:border-[#2563A6] transition-all flex flex-col justify-between group">
+                    <div>
+                        <div class="w-12 h-12 rounded-lg bg-[#DCEAF5] text-[#2563A6] flex items-center justify-center mb-4 group-hover:bg-[#2563A6] group-hover:text-white transition-all">
+                            <i data-lucide="${icon}" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2 text-[#17212B]">${title}</h3>
+                        <p class="text-xs text-gray-600 mb-4 leading-relaxed">${desc}</p>
+                        <p class="text-[11px] font-semibold text-[#2563A6] mb-4">${models}</p>
+                    </div>
+                    <button onclick="switchView('book')" class="text-xs font-semibold text-[#17212B] flex items-center gap-1 hover:text-[#2563A6] pt-2 border-t border-gray-100">
+                        <span data-i18n="view_service">Book Service</span> <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderStepCard(num, titleKey, descKey, icon) {
+            return `
+                <div class="bg-[#F7F6F2] p-5 rounded-xl border border-gray-200 flex flex-col items-center text-center">
+                    <div class="w-10 h-10 rounded-full bg-[#17212B] text-white flex items-center justify-center font-bold text-sm mb-3">
+                        ${num}
+                    </div>
+                    <h4 class="font-bold text-sm text-[#17212B] mb-1" data-i18n="${titleKey}">Step</h4>
+                    <p class="text-[11px] text-gray-600 leading-snug" data-i18n="${descKey}">Description</p>
+                </div>
+            `;
+        }
+
+        // --- 2. TRACKING VIEW ---
+        function renderTrackView(repairNo = 'ER-20481') {
+            const repair = repairDatabase.find(r => r.id === repairNo);
+            
+            return `
+                <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
+                    <div class="mb-8 text-center">
+                        <h1 class="text-3xl font-bold tracking-tight mb-2">Repair Status Tracker</h1>
+                        <p class="text-sm text-gray-600">Enter your repair identification number for real-time progress.</p>
+                    </div>
+
+                    <!-- Search Input Form -->
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm mb-8 flex flex-col sm:flex-row gap-3">
+                        <input type="text" id="track-number-input" value="${repairNo}" placeholder="Enter repair # (e.g. ER-20481)" class="flex-1 bg-gray-50 border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                        <button onclick="handleTrackingSearch()" class="bg-[#2563A6] hover:bg-[#1d4e8a] text-white px-6 py-3 rounded-lg font-medium text-sm transition-all shadow-sm">
+                            Track Repair
+                        </button>
+                    </div>
+
+                    ${repair ? renderRepairResultCard(repair) : renderTrackingError()}
+                </div>
+            `;
+        }
+
+        function renderRepairResultCard(repair) {
+            // Status badge styling logic
+            let badgeClass = "bg-blue-100 text-[#2563A6]";
+            let dotColor = "bg-[#2563A6]";
+            if(repair.statusKey === 'ready') { badgeClass = "bg-green-100 text-[#3F7D5A]"; dotColor = "bg-[#3F7D5A]"; }
+            if(repair.statusKey === 'repairing') { badgeClass = "bg-amber-100 text-[#C58A32]"; dotColor = "bg-[#C58A32]"; }
+
+            return `
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden mb-8">
+                    <!-- Header -->
+                    <div class="bg-[#17212B] text-white p-6 sm:p-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">Repair Ticket</span>
+                            <h2 class="text-2xl font-bold font-mono tracking-tight">${repair.id}</h2>
+                            <p class="text-sm text-gray-300 mt-1">${repair.brandModel} &bull; <span class="text-gray-400">${repair.problemCategory}</span></p>
+                        </div>
+                        <div class="px-4 py-2 rounded-full ${badgeClass} font-semibold text-xs flex items-center gap-2">
+                            <span class="w-2.5 h-2.5 rounded-full ${dotColor} animate-pulse"></span>
+                            <span>${repair.status}</span>
+                        </div>
+                    </div>
+
+                    <!-- Meta Details & Estimate Approval Box -->
+                    <div class="p-6 sm:p-8 border-b border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-6 bg-[#F7F6F2]">
+                        <div class="space-y-3">
+                            <div class="text-xs text-gray-500 uppercase font-semibold">Customer & Device Info</div>
+                            <p class="text-sm"><strong>Client:</strong> ${repair.customerName}</p>
+                            <p class="text-sm"><strong>Serial/IMEI:</strong> ${repair.serialNumber}</p>
+                            <p class="text-sm"><strong>Assigned Technician:</strong> ${repair.technician}</p>
+                            <p class="text-sm"><strong>Estimated Completion:</strong> ${repair.estimatedCompletion}</p>
+                        </div>
+
+                        <!-- Estimate & Approval Component -->
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <h4 class="text-xs uppercase tracking-wider text-gray-500 font-semibold mb-3">Repair Estimate Breakdown</h4>
+                            <div class="space-y-2 text-sm mb-4">
+                                <div class="flex justify-between"><span>Parts Replacement</span> <span>$${repair.estimate.parts}.00</span></div>
+                                <div class="flex justify-between"><span>Labor & Diagnostics</span> <span>$${repair.estimate.labor}.00</span></div>
+                                <div class="border-t border-gray-200 pt-2 flex justify-between font-bold text-[#17212B]"><span>Total</span> <span>$${repair.estimate.total}.00</span></div>
+                            </div>
+                            ${repair.estimate.approved ? 
+                                `<div class="bg-green-50 border border-green-200 text-[#3F7D5A] text-xs p-2.5 rounded-lg font-medium text-center flex items-center justify-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4"></i> Estimate Approved by Client</div>` :
+                                `<div class="flex gap-2"><button onclick="approveEstimate('${repair.id}')" class="flex-1 bg-[#3F7D5A] text-white py-2 rounded-lg text-xs font-semibold hover:bg-green-700 transition-all">Approve Estimate</button></div>`
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Timeline History -->
+                    <div class="p-6 sm:p-8">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-6">Repair Milestone Timeline</h3>
+                        <div class="space-y-6">
+                            ${repair.history.map((h, index) => `
+                                <div class="flex gap-4 items-start relative ${index !== repair.history.length - 1 ? 'pb-6 border-l-2 border-gray-200 ml-3 pl-6' : 'ml-3 pl-6'}">
+                                    <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-[#2563A6] text-white flex items-center justify-center text-xs font-bold ring-4 ring-white">✓</div>
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <h4 class="font-bold text-sm text-[#17212B]">${h.status}</h4>
+                                            <span class="text-xs text-gray-400">— ${h.time}</span>
+                                        </div>
+                                        <p class="text-xs text-gray-600 mt-1">${h.note}</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTrackingError() {
+            return `
+                <div class="bg-red-50 border border-red-200 p-8 rounded-2xl text-center space-y-3">
+                    <div class="w-12 h-12 rounded-full bg-red-100 text-[#B84A4A] flex items-center justify-center mx-auto">
+                        <i data-lucide="alert-circle" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-[#17212B]">Repair Not Found</h3>
+                    <p class="text-xs text-gray-600 max-w-md mx-auto">We couldn't find a repair ticket matching that number. Please verify your reference number (e.g. ER-20481) and try again.</p>
+                </div>
+            `;
+        }
+
+        function executeQuickTrack() {
+            const val = document.getElementById('quick-track-input').value.trim();
+            switchView('track', val);
+        }
+
+        function handleTrackingSearch() {
+            const val = document.getElementById('track-number-input').value.trim();
+            switchView('track', val);
+        }
+
+        // --- 3. REPAIR BOOKING VIEW ---
+        function renderBookingView() {
+            return `
+                <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
+                    <div class="mb-8 text-center">
+                        <h1 class="text-3xl font-bold tracking-tight mb-2">Book an Electronic Repair</h1>
+                        <p class="text-sm text-gray-600">Fill in your device details to instantly schedule diagnostic intake.</p>
+                    </div>
+
+                    <div class="bg-white p-6 sm:p-10 rounded-2xl border border-gray-200 shadow-sm">
+                        <form id="booking-form" onsubmit="submitRepairBooking(event)" class="space-y-6">
+                            <!-- Customer Section -->
+                            <div>
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">1. Customer Information</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Full Name *</label>
+                                        <input type="text" id="bk-name" required placeholder="John Doe" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Email Address *</label>
+                                        <input type="email" id="bk-email" required placeholder="john@example.com" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Phone Number *</label>
+                                        <input type="tel" id="bk-phone" required placeholder="+1 (555) 000-0000" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Preferred Contact Method</label>
+                                        <select id="bk-contact-method" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                            <option value="Email">Email</option>
+                                            <option value="SMS">SMS Text</option>
+                                            <option value="Phone Call">Phone Call</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Device Section -->
+                            <div class="pt-4 border-t border-gray-200">
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">2. Device Information</h3>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Device Category *</label>
+                                        <select id="bk-category" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                            <option value="Smartphones">Smartphone</option>
+                                            <option value="Laptops">Laptop / MacBook</option>
+                                            <option value="Tablets">Tablet / iPad</option>
+                                            <option value="Game Consoles">Game Console</option>
+                                            <option value="Other Electronics">Other Electronics</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Brand & Model *</label>
+                                        <input type="text" id="bk-model" required placeholder="e.g. MacBook Pro 14' or iPhone 15" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Serial Number / IMEI (Optional)</label>
+                                        <input type="text" id="bk-serial" placeholder="Found on device settings or back chassis" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Problem Description -->
+                            <div class="pt-4 border-t border-gray-200">
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500 mb-4">3. Problem Details</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Problem Category *</label>
+                                        <select id="bk-prob-cat" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]">
+                                            <option value="Screen / Display">Screen / Display Damage</option>
+                                            <option value="Battery / Power">Battery & Charging Issues</option>
+                                            <option value="Liquid Damage">Liquid / Water Damage</option>
+                                            <option value="Software / OS">Software / Crashing</option>
+                                            <option value="Other Hardware">Other Hardware Malfunction</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-semibold text-gray-700 mb-1">Detailed Description *</label>
+                                        <textarea id="bk-desc" rows="3" required placeholder="Describe what happened and when the problem occurs..." class="w-full bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#2563A6]"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full bg-[#2563A6] hover:bg-[#1d4e8a] text-white py-3.5 rounded-lg font-medium text-sm transition-all shadow-md flex items-center justify-center gap-2">
+                                <i data-lucide="send" class="w-4 h-4"></i> Submit Repair Request
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+
+        function submitRepairBooking(e) {
+            e.preventDefault();
+            const newId = 'ER-' + Math.floor(10000 + Math.random() * 90000);
+            
+            const newRepair = {
+                id: newId,
+                customerName: document.getElementById('bk-name').value,
+                email: document.getElementById('bk-email').value,
+                phone: document.getElementById('bk-phone').value,
+                deviceCategory: document.getElementById('bk-category').value,
+                brandModel: document.getElementById('bk-model').value,
+                serialNumber: document.getElementById('bk-serial').value || 'N/A',
+                problemCategory: document.getElementById('bk-prob-cat').value,
+                problemDescription: document.getElementById('bk-desc').value,
+                status: "Request Received",
+                statusKey: "request_received",
+                technician: "Unassigned",
+                estimatedCompletion: "Pending Diagnosis",
+                createdAt: "Just now",
+                estimate: { parts: 0, labor: 0, total: 0, approved: false },
+                history: [
+                    { status: "Request Received", time: "Just now", note: "Online request generated by client." }
+                ]
+            };
+
+            repairDatabase.unshift(newRepair);
+            switchView('track', newId);
+        }
+
+        // --- 4. CUSTOMER DASHBOARD VIEW ---
+        function renderCustomerDashboardView() {
+            return `
+                <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                        <div>
+                            <h1 class="text-3xl font-bold tracking-tight">Client Portal Dashboard</h1>
+                            <p class="text-sm text-gray-600">Welcome back, John Doe. Manage your active repairs and notifications.</p>
+                        </div>
+                        <button onclick="switchView('book')" class="bg-[#2563A6] text-white px-4 py-2 rounded-lg text-sm font-medium shadow-sm">
+                            + Book New Repair
+                        </button>
+                    </div>
+
+                    <!-- Active Repairs List -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-gray-500">Active Repair Tickets</h3>
+                        <div class="grid grid-cols-1 gap-4">
+                            ${repairDatabase.map(r => `
+                                <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                    <div>
+                                        <div class="flex items-center gap-3 mb-1">
+                                            <span class="font-mono font-bold text-[#2563A6]">${r.id}</span>
+                                            <span class="px-2.5 py-0.5 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">${r.status}</span>
+                                        </div>
+                                        <h4 class="font-bold text-lg text-[#17212B]">${r.brandModel}</h4>
+                                        <p class="text-xs text-gray-600">Problem: ${r.problemDescription}</p>
+                                    </div>
+                                    <button onclick="switchView('track', '${r.id}')" class="bg-gray-100 hover:bg-[#2563A6] hover:text-white text-gray-700 px-4 py-2 rounded-lg text-xs font-semibold transition-all">
+                                        View Live Timeline →
+                                    </button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- 5. ADMIN / TECHNICIAN DASHBOARD VIEW ---
+        function renderAdminDashboardView() {
+            return `
+                <div class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+                        <div>
+                            <span class="text-xs font-bold uppercase tracking-wider text-[#3F7D5A] bg-green-50 px-2.5 py-1 rounded">Internal Management</span>
+                            <h1 class="text-3xl font-bold tracking-tight mt-1">Technician Repair Console</h1>
+                        </div>
+                        <div class="text-xs text-gray-500">Active Facility: HQ-North Repair Lab</div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <span class="text-xs text-gray-500 uppercase font-semibold">Total Repairs</span>
+                            <p class="text-2xl font-bold text-[#17212B] mt-1">${repairDatabase.length}</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <span class="text-xs text-gray-500 uppercase font-semibold">In Progress</span>
+                            <p class="text-2xl font-bold text-[#2563A6] mt-1">${repairDatabase.filter(r => r.status === 'Repairing' || r.status === 'Diagnosing').length}</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <span class="text-xs text-gray-500 uppercase font-semibold">Ready for Pickup</span>
+                            <p class="text-2xl font-bold text-[#3F7D5A] mt-1">${repairDatabase.filter(r => r.status === 'Ready for Collection').length}</p>
+                        </div>
+                        <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
+                            <span class="text-xs text-gray-500 uppercase font-semibold">Awaiting Parts</span>
+                            <p class="text-2xl font-bold text-[#C58A32] mt-1">0</p>
+                        </div>
+                    </div>
+
+                    <!-- Repair Table -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                            <h3 class="font-bold text-sm text-[#17212B]">Active Repair Tickets Queue</h3>
+                            <span class="text-xs text-gray-500">Real-time authoritative database</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-gray-100 text-gray-700 uppercase tracking-wider border-b border-gray-200">
+                                        <th class="p-3">Repair #</th>
+                                        <th class="p-3">Customer</th>
+                                        <th class="p-3">Device</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3">Technician</th>
+                                        <th class="p-3">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200">
+                                    ${repairDatabase.map(r => `
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 font-mono font-bold text-[#2563A6]">${r.id}</td>
+                                            <td class="p-3 font-medium">${r.customerName}</td>
+                                            <td class="p-3">${r.brandModel}</td>
+                                            <td class="p-3">
+                                                <select onchange="updateRepairStatus('${r.id}', this.value)" class="bg-white border border-gray-300 rounded px-2 py-1 text-xs font-semibold focus:ring-2 focus:ring-[#2563A6]">
+                                                    <option value="Request Received" ${r.status === 'Request Received' ? 'selected' : ''}>Request Received</option>
+                                                    <option value="Device Received" ${r.status === 'Device Received' ? 'selected' : ''}>Device Received</option>
+                                                    <option value="Diagnosing" ${r.status === 'Diagnosing' ? 'selected' : ''}>Diagnosing</option>
+                                                    <option value="Awaiting Customer Approval" ${r.status === 'Awaiting Customer Approval' ? 'selected' : ''}>Awaiting Approval</option>
+                                                    <option value="Repairing" ${r.status === 'Repairing' ? 'selected' : ''}>Repairing</option>
+                                                    <option value="Testing" ${r.status === 'Testing' ? 'selected' : ''}>Testing</option>
+                                                    <option value="Ready for Collection" ${r.status === 'Ready for Collection' ? 'selected' : ''}>Ready for Collection</option>
+                                                    <option value="Completed" ${r.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                                </select>
+                                            </td>
+                                            <td class="p-3 text-gray-600">${r.technician}</td>
+                                            <td class="p-3">
+                                                <button onclick="switchView('track', '${r.id}')" class="text-[#2563A6] font-semibold hover:underline">Inspect</button>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // --- AUTOMATED STATUS UPDATE TRIGGER (Architecture Rule #13) ---
+        function updateRepairStatus(repairId, newStatus) {
+            const repair = repairDatabase.find(r => r.id === repairId);
+            if(repair) {
+                repair.status = newStatus;
+                
+                // Set appropriate key
+                if(newStatus === 'Ready for Collection') repair.statusKey = 'ready';
+                else if(newStatus === 'Repairing') repair.statusKey = 'repairing';
+                else repair.statusKey = 'active';
+
+                // Automatically trigger history event
+                const nowStr = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                repair.history.push({
+                    status: newStatus,
+                    time: nowStr,
+                    note: `Status automatically updated by technician console. Notification triggered.`
+                });
+                
+                alert(`SUCCESS: Status for ${repairId} updated to "${newStatus}". Customer tracking page and notification trigger updated.`);
+                switchView('admin');
+            }
+        }
+
+        function approveEstimate(repairId) {
+            const repair = repairDatabase.find(r => r.id === repairId);
+            if(repair) {
+                repair.estimate.approved = true;
+                repair.status = "Repairing";
+                repair.statusKey = "repairing";
+                repair.history.push({
+                    status: "Repairing",
+                    time: "Just now",
+                    note: "Estimate approved by client. Technician initiated repair process."
+                });
+                alert("Estimate approved! Status automatically changed to Repairing.");
+                switchView('track', repairId);
+            }
+        }
+
+        // --- AI CUSTOMER-CARE CHAT WIDGET LOGIC ---
+        function toggleAIChat() {
+            const win = document.getElementById('ai-chat-window');
+            win.classList.toggle('hidden');
+        }
+
+        function sendQuickPrompt(text) {
+            document.getElementById('ai-input').value = text;
+            sendAIMessage();
+        }
+
+        function handleAIPress(e) {
+            if(e.key === 'Enter') sendAIMessage();
+        }
+
+        function sendAIMessage() {
+            const inputEl = document.getElementById('ai-input');
+            const msg = inputEl.value.trim();
+            if(!msg) return;
+
+            const chatContainer = document.getElementById('ai-messages');
+            
+            // Append user message
+            chatContainer.innerHTML += `
+                <div class="flex gap-2 justify-end">
+                    <div class="bg-[#2563A6] text-white p-3 rounded-2xl rounded-tr-sm shadow-sm max-w-[85%]">
+                        <p>${msg}</p>
+                    </div>
+                </div>
+            `;
+            inputEl.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Simulated intelligent AI response based on authoritative repair database
+            setTimeout(() => {
+                let botReply = "I can help you with services, booking, or tracking your repair. Please provide your repair number (e.g. ER-20481).";
+                
+                const lower = msg.toLowerCase();
+                if(lower.includes('er-20481') || lower.includes('macbook')) {
+                    const r = repairDatabase.find(item => item.id === 'ER-20481');
+                    botReply = `Your ${r.brandModel} repair (#${r.id}) is currently in the **${r.status}** stage. Estimated completion is ${r.estimatedCompletion}.`;
+                } else if(lower.includes('er-20492') || lower.includes('iphone')) {
+                    const r = repairDatabase.find(item => item.id === 'ER-20492');
+                    botReply = `Your ${r.brandModel} repair (#${r.id}) is **${r.status}**! You can pick it up at our service center.`;
+                } else if(lower.includes('service') || lower.includes('offer')) {
+                    botReply = "We provide expert component-level repairs for Smartphones, Laptops, Tablets, and Game Consoles with a 90-day warranty.";
+                } else if(lower.includes('book') || lower.includes('schedule')) {
+                    botReply = "You can book a repair instantly by clicking the 'Book a Repair' button in the navigation header!";
+                }
+
+                chatContainer.innerHTML += `
+                    <div class="flex gap-2 max-w-[85%]">
+                        <div class="w-7 h-7 rounded-full bg-[#17212B] text-white flex-shrink-0 flex items-center justify-center text-xs">AI</div>
+                        <div class="bg-white p-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-200 text-gray-800">
+                            <p>${botReply}</p>
+                        </div>
+                    </div>
+                `;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 600);
+        }
+    </script>
+</body>
+</html>
