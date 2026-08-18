@@ -32,7 +32,7 @@ export default function BookRepairPage() {
   const [submitted, setSubmitted] = useState(false);
   const [trackingId, setTrackingId] = useState("");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget);
@@ -40,12 +40,9 @@ export default function BookRepairPage() {
 
     const id = generateTrackingId(deviceType);
 
-
-
     const repair = {
       id,
-      status: "Request Received",
-      device: String(formData.get("deviceType") || "Electronic device"),
+      device: deviceType || "Electronic device",
       deviceType,
       brand: String(formData.get("brand") || ""),
       model: String(formData.get("model") || ""),
@@ -54,15 +51,29 @@ export default function BookRepairPage() {
       phone: String(formData.get("phone") || ""),
       email: String(formData.get("email") || ""),
       notes: String(formData.get("notes") || ""),
-      message:
-        "Your repair request has been received. A technician will review your device and update the repair status.",
-      createdAt: new Date().toISOString(),
     };
 
-    saveRepair(repair);
+    try {
+      const response = await fetch("/api/repairs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(repair),
+      });
 
-    setTrackingId(id);
-    setSubmitted(true);
+      if (!response.ok) {
+        throw new Error("Failed to create repair");
+      }
+
+      setTrackingId(id);
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Repair submission failed:", error);
+      alert(
+        "We couldn't submit your repair request. Please try again."
+      );
+    }
   }
 
   if (submitted) {

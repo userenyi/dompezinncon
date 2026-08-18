@@ -20,7 +20,7 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
-import { findRepair, type RepairStatus } from "../../lib/repairs";
+import type { RepairStatus } from "../../lib/repairs";
 
 const statuses = [
   {
@@ -58,25 +58,40 @@ function TrackRepairContent() {
   useEffect(() => {
     const id = new URLSearchParams(window.location.search).get("id");
 
-    if (id) {
-      const normalizedId = id.trim().toUpperCase();
+    if (!id) {
+      return;
+    }
 
-      setTrackingId(normalizedId);
-      setSearchedId(normalizedId);
+    const normalizedId = id.trim().toUpperCase();
 
-      const result = findRepair(normalizedId);
+    setTrackingId(normalizedId);
+    setSearchedId(normalizedId);
 
-      if (result) {
-        setRepair(result);
+    async function loadRepair() {
+      try {
+        const response = await fetch(
+          `/api/repairs/${encodeURIComponent(normalizedId)}`
+        );
+
+        if (!response.ok) {
+          throw new Error("Repair not found");
+        }
+
+        const data = await response.json();
+
+        setRepair(data.repair);
         setError("");
-      } else {
+      } catch (error) {
+        console.error("Tracking lookup failed:", error);
         setRepair(null);
         setError("We couldn't find that repair. Check the ID and try again.");
       }
     }
+
+    loadRepair();
   }, []);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const id = trackingId.trim().toUpperCase();
@@ -90,17 +105,26 @@ function TrackRepairContent() {
 
     setSearchedId(id);
 
-    const result = findRepair(id);
+    try {
+      const response = await fetch(
+        `/api/repairs/${encodeURIComponent(id)}`
+      );
 
-    if (!result) {
+      if (!response.ok) {
+        throw new Error("Repair not found");
+      }
+
+      const data = await response.json();
+
+      setError("");
+      setRepair(data.repair);
+    } catch (error) {
+      console.error("Tracking lookup failed:", error);
       setError("We couldn't find that repair. Check the ID and try again.");
       setRepair(null);
-      return;
     }
-
-    setError("");
-    setRepair(result);
   }
+
 
   const hasResult = searchedId.length > 0;
 

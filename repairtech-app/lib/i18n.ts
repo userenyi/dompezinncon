@@ -17,11 +17,11 @@ export const translations = {
     },
 
     home: {
-      professional: "PROFESSIONAL ELECTRONIC REPAIR",
+      professional: "DOMPEZ INTERNATIONAL COMPUTER REPAIR",
       heroTitle1: "Your Device.",
       heroTitle2: "Professionally Repaired.",
       heroDescription:
-        "Fast, reliable electronic repair with transparent service and real-time repair tracking.",
+        "Expert Repairs. Global Solutions.",
       trackMyRepair: "Track My Repair",
       trackTitle: "Track Your Repair",
       trackDescription:
@@ -36,7 +36,7 @@ export const translations = {
         "Our repair assistant will help customers with common questions, repair tracking and service information.",
       askAssistant: "Ask Assistant",
       footer:
-        "© 2026 RepairTech. Professional Electronic Repair Services.",
+        "© 2026 DOMPEZ INTERNATIONAL COMPUTER REPAIR. DOMPEZ INTERNATIONAL COMPUTER REPAIR — Expert Repairs. Global Solutions.",
       trackingRequired: "Please enter your tracking ID.",
       trackingNotFound:
         "We couldn't find that repair. Check the ID and try again.",
@@ -76,7 +76,7 @@ export const translations = {
       backHome: "Back to Home",
       title: "Track Your Repair",
       description:
-        "Enter your RepairTech tracking ID to see the current status of your repair.",
+        "Enter your DOMPEZ tracking ID to see the current status of your repair.",
       trackingId: "Tracking ID",
       track: "Track",
       requestReceived: "Repair Request Received",
@@ -132,7 +132,7 @@ export const translations = {
         "Notre assistant de réparation aide les clients avec les questions courantes, le suivi des réparations et les informations sur les services.",
       askAssistant: "Demander à l'assistant",
       footer:
-        "© 2026 RepairTech. Services professionnels de réparation électronique.",
+        "© 2026 DOMPEZ INTERNATIONAL COMPUTER REPAIR. Services professionnels de réparation électronique.",
       trackingRequired: "Veuillez saisir votre numéro de suivi.",
       trackingNotFound:
         "Nous n'avons pas trouvé cette réparation. Vérifiez le numéro et réessayez.",
@@ -172,7 +172,7 @@ export const translations = {
       backHome: "Retour à l'accueil",
       title: "Suivez votre réparation",
       description:
-        "Entrez votre numéro de suivi RepairTech pour voir l'état actuel de votre réparation.",
+        "Entrez votre numéro de suivi DOMPEZ pour voir l'état actuel de votre réparation.",
       trackingId: "Numéro de suivi",
       track: "Suivre",
       requestReceived: "Demande de réparation reçue",
@@ -228,7 +228,7 @@ export const translations = {
         "Nuestro asistente de reparación ayuda a los clientes con preguntas frecuentes, seguimiento de reparaciones e información sobre servicios.",
       askAssistant: "Preguntar al asistente",
       footer:
-        "© 2026 RepairTech. Servicios profesionales de reparación electrónica.",
+        "© 2026 DOMPEZ INTERNATIONAL COMPUTER REPAIR. Servicios profesionales de reparación electrónica.",
       trackingRequired: "Introduce tu número de seguimiento.",
       trackingNotFound:
         "No encontramos esa reparación. Comprueba el número e inténtalo de nuevo.",

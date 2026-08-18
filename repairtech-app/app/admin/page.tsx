@@ -16,11 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import Link from "next/link";
-import {
-  loadRepairs,
-  saveRepair,
-  type RepairStatus,
-} from "../../lib/repairs";
+import type { RepairStatus } from "../../lib/repairs";
 
 const statuses = [
   "Request Received",
@@ -36,9 +32,33 @@ export default function AdminPage() {
   const [selectedId, setSelectedId] = useState("");
   const [status, setStatus] = useState("");
   const [message, setMessage] = useState("");
+  const [updateState, setUpdateState] = useState<"idle" | "saving" | "success" | "error">("idle");
 
   useEffect(() => {
-    setRepairs(loadRepairs());
+    async function loadRepairsFromDatabase() {
+      try {
+        const response = await fetch("/api/repairs");
+
+        if (!response.ok) {
+          throw new Error("Unable to load repairs");
+        }
+
+        const data = await response.json();
+
+        const repairsById = Object.fromEntries(
+          (data.repairs as RepairStatus[]).map((repair) => [
+            repair.id,
+            repair,
+          ])
+        );
+
+        setRepairs(repairsById);
+      } catch (error) {
+        console.error("Failed to load repairs:", error);
+      }
+    }
+
+    loadRepairsFromDatabase();
   }, []);
 
   const repairList = Object.values(repairs).sort(
@@ -66,23 +86,45 @@ export default function AdminPage() {
     setMessage(repair.message);
   }
 
-  function updateRepair() {
+  async function updateRepair() {
     const repair = repairs[selectedId];
 
     if (!repair) return;
 
-    const updatedRepair: RepairStatus = {
-      ...repair,
-      status,
-      message,
-    };
+    setUpdateState("saving");
 
-    saveRepair(updatedRepair);
+    try {
+      const response = await fetch("/api/repairs", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: selectedId,
+          status,
+          message,
+        }),
+      });
 
-    setRepairs((current) => ({
-      ...current,
-      [selectedId]: updatedRepair,
-    }));
+      if (!response.ok) {
+        throw new Error("Unable to update repair");
+      }
+
+      const data = await response.json();
+      const updatedRepair = data.repair as RepairStatus;
+
+      setRepairs((current) => ({
+        ...current,
+        [selectedId]: updatedRepair,
+      }));
+
+      setStatus(updatedRepair.status);
+      setMessage(updatedRepair.message);
+      setUpdateState("success");
+    } catch (error) {
+      console.error("Failed to update repair:", error);
+      setUpdateState("error");
+    }
   }
 
   const selectedRepair = selectedId
@@ -348,9 +390,34 @@ export default function AdminPage() {
                       variant="contained"
                       size="large"
                       onClick={updateRepair}
+                      disabled={updateState === "saving"}
                     >
-                      Save Repair Update
+                      {updateState === "saving"
+                        ? "Updating..."
+                        : "Save Repair Update"}
                     </Button>
+
+                    {updateState === "success" && (
+                      <Typography
+                        sx={{
+                          color: "success.main",
+                          fontWeight: 600,
+                        }}
+                      >
+                        ✓ Repair updated successfully.
+                      </Typography>
+                    )}
+
+                    {updateState === "error" && (
+                      <Typography
+                        sx={{
+                          color: "error.main",
+                          fontWeight: 600,
+                        }}
+                      >
+                        Unable to update the repair. Please try again.
+                      </Typography>
+                    )}
                   </Stack>
                 )}
               </CardContent>

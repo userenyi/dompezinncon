@@ -36,18 +36,18 @@ const translations = {
     trackRepair: "Track Repair",
     admin: "Admin",
     bookRepair: "Book a Repair",
-    professional: "PROFESSIONAL ELECTRONIC REPAIR",
-    heroTitle1: "{t.heroTitle1}",
-    heroTitle2: "{t.heroTitle2}",
+    professional: "DOMPEZ INTERNATIONAL COMPUTER REPAIR",
+    heroTitle1: "Your Device.",
+    heroTitle2: "Professionally Repaired.",
     heroDescription:
-      "{t.heroDescription}",
+      "Expert Repairs. Global Solutions.",
     trackMyRepair: "Track My Repair",
     trackTitle: "Track Your Repair",
     trackDescription:
       "{t.trackDescription}",
     trackButton: "Track Repair",
     noAccount: "No customer account required.",
-    servicesTitle: "Electronic Repair Services",
+    servicesTitle: "DOMPEZ International Computer Repair Services",
     servicesDescription:
       "{t.servicesDescription}",
     needHelp: "Need help?",
@@ -81,7 +81,7 @@ const translations = {
     assistantDescription:
       "Notre assistant de réparation aide les clients avec les questions courantes, le suivi des réparations et les informations sur les services.",
     askAssistant: "Demander à l'assistant",
-    footer: "© 2026 RepairTech. Services professionnels de réparation électronique.",
+    footer: "© 2026 DOMPEZ INTERNATIONAL COMPUTER REPAIR. Services professionnels de réparation électronique.",
   },
 
   Español: {
@@ -108,7 +108,7 @@ const translations = {
     assistantDescription:
       "Nuestro asistente de reparación ayuda a los clientes con preguntas frecuentes, seguimiento de reparaciones e información sobre servicios.",
     askAssistant: "Preguntar al asistente",
-    footer: "© 2026 RepairTech. Servicios profesionales de reparación electrónica.",
+    footer: "© 2026 DOMPEZ INTERNATIONAL COMPUTER REPAIR. Servicios profesionales de reparación electrónica.",
   },
 };
 
@@ -339,7 +339,7 @@ export default function Home() {
                     letterSpacing: 1.5,
                   }}
                 >
-                  PROFESSIONAL ELECTRONIC REPAIR
+                  DOMPEZ INTERNATIONAL COMPUTER REPAIR
                 </Typography>
 
                 <Typography
@@ -539,7 +539,7 @@ export default function Home() {
           }}
         >
           <Typography variant="h3" sx={{ fontWeight: 700 }}>
-            Electronic Repair Services
+            DOMPEZ International Computer Repair Services
           </Typography>
 
           <Typography
