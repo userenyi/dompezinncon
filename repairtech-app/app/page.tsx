@@ -36,11 +36,11 @@ const translations = {
     trackRepair: "Track Repair",
     admin: "Admin",
     bookRepair: "Book a Repair",
-    professional: "DOMPEZ INTERNATIONAL COMPUTER REPAIR",
+    professional: "PROFESSIONAL ELECTRONIC REPAIR",
     heroTitle1: "Your Device.",
     heroTitle2: "Professionally Repaired.",
     heroDescription:
-      "Expert Repairs. Global Solutions.",
+      "Fast, reliable electronic repair with transparent service and real-time repair tracking.",
     trackMyRepair: "Track My Repair",
     trackTitle: "Track Your Repair",
     trackDescription:
@@ -210,10 +210,7 @@ export default function Home() {
                     color: "secondary.main",
                   }}
                 >
-                  REPAIR
-                  <Box component="span" sx={{ color: "primary.main" }}>
-                    TECH
-                  </Box>
+                  DOMPEZ INTERNATIONAL COMPUTER REPAIR
                 </Typography>
 
                 <Typography
@@ -224,7 +221,7 @@ export default function Home() {
                     mt: 0.5,
                   }}
                 >
-                  ELECTRONICS SERVICE
+                  Expert Repairs. Global Solutions.
                 </Typography>
               </Box>
             </Stack>
@@ -339,7 +336,7 @@ export default function Home() {
                     letterSpacing: 1.5,
                   }}
                 >
-                  DOMPEZ INTERNATIONAL COMPUTER REPAIR
+                  {t.professional}
                 </Typography>
 
                 <Typography
