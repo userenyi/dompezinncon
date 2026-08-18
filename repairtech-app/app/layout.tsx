@@ -12,7 +12,7 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "RepairTech | Professional Electronic Repair",
+  title: "DOMPEZ INTERNATIONAL COMPUTER REPAIR | Expert Repairs. Global Solutions.",
   description:
     "Professional electronic repair services with transparent pricing and repair tracking.",
 };

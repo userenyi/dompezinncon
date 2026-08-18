@@ -54,7 +54,7 @@ const translations = {
     assistantDescription:
       "{t.assistantDescription}",
     askAssistant: "Ask Assistant",
-    footer: "{t.footer}",
+    footer: "© 2026 DOMPEZ INTERNATIONAL COMPUTER REPAIR. Expert Repairs. Global Solutions.",
   },
 
   Français: {
@@ -678,7 +678,7 @@ export default function Home() {
       >
         <Container maxWidth="xl">
           <Typography variant="body2">
-            {t.footer}
+            © 2026 DOMPEZ INTERNATIONAL COMPUTER REPAIR. Expert Repairs. Global Solutions.
           </Typography>
         </Container>
       </Box>
