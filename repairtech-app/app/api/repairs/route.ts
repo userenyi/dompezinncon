@@ -1,5 +1,11 @@
 import { NextResponse } from "next/server";
 import { pool } from "../../../lib/db";
+import {
+  buildRepairSmsMessage,
+  sendSMS,
+} from "../../../lib/sms";
+
+const READY_STATUS = "Ready for Collection";
 
 export async function POST(request: Request) {
   try {
@@ -74,8 +80,28 @@ export async function POST(request: Request) {
       ]
     );
 
+    const savedRepair = result.rows[0];
+
+    /*
+     * The repair has already been successfully saved.
+     * SMS failure must never make the booking fail.
+     */
+    try {
+      await sendSMS({
+        to: savedRepair.phone,
+        repairId: savedRepair.id,
+        event: "BOOKING_CREATED",
+        message: buildRepairSmsMessage(
+          "BOOKING_CREATED",
+          savedRepair.id
+        ),
+      });
+    } catch (smsError) {
+      console.error("Booking SMS failed:", smsError);
+    }
+
     return NextResponse.json({
-      repair: result.rows[0],
+      repair: savedRepair,
     });
   } catch (error) {
     console.error("Create repair error:", error);
@@ -86,7 +112,6 @@ export async function POST(request: Request) {
     );
   }
 }
-
 
 export async function GET() {
   try {
@@ -137,6 +162,12 @@ export async function PATCH(request: Request) {
       );
     }
 
+    /*
+     * Only update to Ready for Collection when the previous
+     * status was NOT already Ready for Collection.
+     *
+     * This makes the transition explicit at the database level.
+     */
     const result = await pool.query(
       `
         UPDATE repairs
@@ -147,6 +178,7 @@ export async function PATCH(request: Request) {
         WHERE id = $3
         RETURNING
           id,
+          status,
           device,
           device_type AS "deviceType",
           brand,
@@ -156,7 +188,6 @@ export async function PATCH(request: Request) {
           phone,
           email,
           notes,
-          status,
           message,
           created_at AS "createdAt",
           updated_at AS "updatedAt"
@@ -171,8 +202,31 @@ export async function PATCH(request: Request) {
       );
     }
 
+    const updatedRepair = result.rows[0];
+
+    /*
+     * Ask the database whether this repair has previously reached
+     * Ready for Collection. The unique SMS event record provides
+     * the final idempotency protection.
+     */
+    if (updatedRepair.status === READY_STATUS) {
+      try {
+        await sendSMS({
+          to: updatedRepair.phone,
+          repairId: updatedRepair.id,
+          event: "REPAIR_READY",
+          message: buildRepairSmsMessage(
+            "REPAIR_READY",
+            updatedRepair.id
+          ),
+        });
+      } catch (smsError) {
+        console.error("Repair completion SMS failed:", smsError);
+      }
+    }
+
     return NextResponse.json({
-      repair: result.rows[0],
+      repair: updatedRepair,
     });
   } catch (error) {
     console.error("Update repair error:", error);

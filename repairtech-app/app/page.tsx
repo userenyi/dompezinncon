@@ -17,7 +17,6 @@ import {
   CardContent,
   Container,
   Grid,
-  IconButton,
   Menu,
   MenuItem,
   Stack,
@@ -26,7 +25,7 @@ import {
   Typography,
 } from "@mui/material";
 
-import { findRepair, type RepairStatus } from "../lib/repairs";
+import type { RepairStatus } from "../lib/repairs";
 
 
 const translations = {
@@ -44,12 +43,12 @@ const translations = {
     trackMyRepair: "Track My Repair",
     trackTitle: "Track Your Repair",
     trackDescription:
-      "{t.trackDescription}",
+      "Enter your tracking ID to see the current status of your device.",
     trackButton: "Track Repair",
     noAccount: "No customer account required.",
     servicesTitle: "DOMPEZ International Computer Repair Services",
     servicesDescription:
-      "{t.servicesDescription}",
+      "Professional repair services for phones, laptops, tablets, televisions, game consoles, appliances and other electronic devices.",
     needHelp: "Need help?",
     assistantDescription:
       "{t.assistantDescription}",
@@ -119,9 +118,28 @@ export default function Home() {
   const [languageAnchor, setLanguageAnchor] =
     useState<null | HTMLElement>(null);
   const [language, setLanguage] = useState("English");
+  const [servicesAnchor, setServicesAnchor] =
+    useState<null | HTMLElement>(null);
+
+  const servicesMenuOpen = Boolean(servicesAnchor);
+
+  const [adminAnchor, setAdminAnchor] =
+    useState<null | HTMLElement>(null);
+
+  const adminMenuOpen = Boolean(adminAnchor);
 
   const languageMenuOpen = Boolean(languageAnchor);
   const t = translations[language as keyof typeof translations];
+
+  function handleServicesMenuOpen(
+    event: React.MouseEvent<HTMLElement>
+  ) {
+    setServicesAnchor(event.currentTarget);
+  }
+
+  function handleServicesMenuClose() {
+    setServicesAnchor(null);
+  }
 
   function handleLanguageOpen(
     event: React.MouseEvent<HTMLElement>
@@ -133,12 +151,22 @@ export default function Home() {
     setLanguageAnchor(null);
   }
 
+  function handleAdminMenuOpen(
+    event: React.MouseEvent<HTMLElement>
+  ) {
+    setAdminAnchor(event.currentTarget);
+  }
+
+  function handleAdminMenuClose() {
+    setAdminAnchor(null);
+  }
+
   function handleLanguageSelect(selectedLanguage: string) {
     setLanguage(selectedLanguage);
     setLanguageAnchor(null);
   }
 
-  function handleTrackRepair() {
+  async function handleTrackRepair() {
     const id = trackingId.trim().toUpperCase();
 
     if (!id) {
@@ -147,18 +175,51 @@ export default function Home() {
       return;
     }
 
-    const result = findRepair(id);
+    try {
+      setTrackingError("");
 
-    if (!result) {
-      setTrackingError(
-        "We couldn't find that repair. Check the ID and try again."
+      const response = await fetch(
+        `/api/repairs/${encodeURIComponent(id)}`,
+        {
+          method: "GET",
+          cache: "no-store",
+        }
       );
-      setRepair(null);
-      return;
-    }
 
-    setTrackingError("");
-    setRepair(result);
+      if (!response.ok) {
+        if (response.status === 404) {
+          setTrackingError(
+            "We couldn't find that repair. Check the ID and try again."
+          );
+        } else {
+          setTrackingError(
+            "Unable to check the repair right now. Please try again."
+          );
+        }
+
+        setRepair(null);
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!data.repair) {
+        setTrackingError(
+          "We couldn't find that repair. Check the ID and try again."
+        );
+        setRepair(null);
+        return;
+      }
+
+      setRepair(data.repair as RepairStatus);
+    } catch (error) {
+      console.error("Track repair error:", error);
+
+      setRepair(null);
+      setTrackingError(
+        "Unable to check the repair right now. Please try again."
+      );
+    }
   }
 
   return (
@@ -234,17 +295,50 @@ export default function Home() {
                 display: { xs: "none", md: "flex" },
               }}
             >
-              <Button color="inherit">{t.services}</Button>
+              <Button
+                color="inherit"
+                onClick={handleServicesMenuOpen}
+                aria-controls={servicesMenuOpen ? "services-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={servicesMenuOpen ? "true" : undefined}
+                sx={{ minWidth: 100 }}
+              >
+                {t.services}
+              </Button>
+
+              <Menu
+                id="services-menu"
+                anchorEl={servicesAnchor}
+                open={servicesMenuOpen}
+                onClose={handleServicesMenuClose}
+              >
+                <MenuItem
+                  component={Link}
+                  href="/services/websites-business-applications"
+                  onClick={handleServicesMenuClose}
+                >
+                  Websites & Business Applications
+                </MenuItem>
+
+                <MenuItem
+                  component={Link}
+                  href="/services/it-support"
+                  onClick={handleServicesMenuClose}
+                >
+                  IT Support & Business Technology
+                </MenuItem>
+
+                <MenuItem
+                  component={Link}
+                  href="/services/cybersecurity"
+                  onClick={handleServicesMenuClose}
+                >
+                  Cybersecurity
+                </MenuItem>
+              </Menu>
 
               <Button color="inherit">{t.howItWorks}</Button>
 
-              <Button
-                color="inherit"
-                component={Link}
-                href="/track"
-              >
-                Track Repair
-              </Button>
 
               <Button
                 color="inherit"
@@ -283,14 +377,6 @@ export default function Home() {
               </Menu>
 
               <Button
-                color="inherit"
-                component={Link}
-                href="/admin"
-              >
-                Admin
-              </Button>
-
-              <Button
                 component={Link}
                 href="/book"
                 variant="contained"
@@ -305,6 +391,40 @@ export default function Home() {
               >
                 Book a Repair
               </Button>
+              <Button
+                color="inherit"
+                onClick={handleAdminMenuOpen}
+                aria-controls={adminMenuOpen ? "admin-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={adminMenuOpen ? "true" : undefined}
+                sx={{ minWidth: 90 }}
+              >
+                LOGIN
+              </Button>
+
+              <Menu
+                id="admin-menu"
+                anchorEl={adminAnchor}
+                open={adminMenuOpen}
+                onClose={handleAdminMenuClose}
+              >
+                <MenuItem
+                  component={Link}
+                  href="/admin/login"
+                  onClick={handleAdminMenuClose}
+                >
+                  ADMIN
+                </MenuItem>
+
+                <MenuItem
+                  component={Link}
+                  href="/staff/login"
+                  onClick={handleAdminMenuClose}
+                >
+                  STAFF
+                </MenuItem>
+              </Menu>
+
             </Stack>
           </Toolbar>
         </Container>
@@ -315,13 +435,13 @@ export default function Home() {
         sx={{
           bgcolor: "secondary.main",
           color: "white",
-          py: { xs: 8, md: 12 },
+          py: { xs: 6, sm: 8, md: 10 },
         }}
       >
         <Container maxWidth="xl">
           <Grid
             container
-            spacing={6}
+            spacing={{ xs: 4, md: 6 }}
             sx={{
               alignItems: "center",
             }}
@@ -343,8 +463,8 @@ export default function Home() {
                   component="h1"
                   sx={{
                     fontSize: {
-                      xs: "2.5rem",
-                      sm: "3.5rem",
+                      xs: "2.15rem",
+                      sm: "3.25rem",
                       md: "4.5rem",
                     },
                     fontWeight: 700,
@@ -374,6 +494,8 @@ export default function Home() {
                   sx={{ pt: 1 }}
                 >
                   <Button
+                    component={Link}
+                    href="/book"
                     variant="contained"
                     size="large"
                     startIcon={<BuildIcon />}
@@ -386,10 +508,12 @@ export default function Home() {
                       },
                     }}
                   >
-                    Book a Repair
+                    {t.bookRepair}
                   </Button>
 
                   <Button
+                    component={Link}
+                    href="/track"
                     variant="outlined"
                     size="large"
                     startIcon={<SearchIcon />}
@@ -400,7 +524,7 @@ export default function Home() {
                       py: 1.5,
                     }}
                   >
-                    Track My Repair
+                    {t.trackMyRepair}
                   </Button>
                 </Stack>
               </Stack>
@@ -664,6 +788,138 @@ export default function Home() {
 
             <Button variant="outlined">{t.askAssistant}</Button>
           </Stack>
+        </Container>
+      </Box>
+
+      {/* IT Services */}
+      <Box
+        component="section"
+        sx={{
+          py: { xs: 7, md: 9 },
+          bgcolor: "#f5f7fa",
+        }}
+      >
+        <Container maxWidth="xl">
+          <Stack spacing={2.5} sx={{ mb: { xs: 4, md: 5 } }}>
+            <Typography
+              variant="overline"
+              sx={{
+                color: "primary.main",
+                fontWeight: 700,
+                letterSpacing: 1.5,
+              }}
+            >
+              IT Services for Businesses
+            </Typography>
+
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 700,
+                color: "secondary.main",
+                fontSize: { xs: "2rem", md: "2.5rem" },
+              }}
+            >
+              Technology solutions beyond repair
+            </Typography>
+
+            <Typography
+              color="text.secondary"
+              sx={{
+                maxWidth: 720,
+                fontSize: { xs: "1rem", md: "1.05rem" },
+              }}
+            >
+              Professional technology services to help businesses
+              operate efficiently, stay connected and protect their
+              information.
+            </Typography>
+          </Stack>
+
+          <Grid container spacing={3}>
+            {[
+              {
+                title: "Websites & Business Applications",
+                description:
+                  "Websites, booking systems, business dashboards and custom applications.",
+                href: "/services/websites-business-applications",
+              },
+              {
+                title: "IT Support & Business Technology",
+                description:
+                  "Office IT, networks, business email and technical maintenance.",
+                href: "/services/it-support",
+              },
+              {
+                title: "Cybersecurity",
+                description:
+                  "Security assessments, protection and basic incident response.",
+                href: "/services/cybersecurity",
+              },
+            ].map((service) => (
+              <Grid
+                key={service.title}
+                size={{ xs: 12, sm: 6, md: 4 }}
+              >
+                <Card
+                  elevation={0}
+                  sx={{
+                    height: "100%",
+                    border: "1px solid",
+                    borderColor: "divider",
+                    borderRadius: 3,
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      transform: "translateY(-4px)",
+                      boxShadow: 4,
+                      borderColor: "primary.main",
+                    },
+                  }}
+                >
+                  <CardContent
+                    sx={{
+                      p: { xs: 3, md: 3.5 },
+                      height: "100%",
+                      display: "flex",
+                      flexDirection: "column",
+                    }}
+                  >
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 700,
+                        color: "secondary.main",
+                        mb: 1.5,
+                      }}
+                    >
+                      {service.title}
+                    </Typography>
+
+                    <Typography
+                      color="text.secondary"
+                      sx={{
+                        lineHeight: 1.7,
+                        mb: 3,
+                      }}
+                    >
+                      {service.description}
+                    </Typography>
+
+                    <Box sx={{ mt: "auto" }}>
+                      <Button
+                        component={Link}
+                        href={service.href}
+                        color="primary"
+                        endIcon={<ArrowForwardIcon />}
+                      >
+                        Explore Service
+                      </Button>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         </Container>
       </Box>
 
